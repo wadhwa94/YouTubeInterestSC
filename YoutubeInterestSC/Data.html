@@ -1,0 +1,139 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <meta charset="utf-8" />
+    <link href="Content/bootstrap.min.css" rel="stylesheet" />
+    <style>
+        .grid-container {
+            display: grid;
+            grid-column-sizing: auto;
+            grid-template-columns: auto auto auto;
+            background-color: #2196F3;
+            padding: 10px;
+        }
+
+        .grid-item {
+            background-color: rgba(255, 255, 255, 0.8);
+            border: 1px solid rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            font-size: 30px;
+            text-align: center;
+        }
+    </style>
+
+</head>
+
+<body style="padding-top:20px">
+    <div>
+        <img style="z-index:1000;position:fixed; top:50%;left:40%; height:30%;width:30%  " src="ajax-loader.gif" id="loaderImage" class="hide" />
+
+        <div class="col-md-10 col-md-offset-1">
+            <div class="well">
+                <input style="padding:3px;" id="btnGetMyInterestsTop20" class="btn btn-success" type="button" value="Get Youtube Interests Last 20 Videos" />
+            </div>
+
+            <div class="well">
+
+                <input style="padding:3px;" id="btnGridView" class="btn btn-success " type="button" value="Grid View" />
+                <input style="padding:3px;" id="btnListView" class="btn btn-success " type="button" value="Table View" />
+            </div>
+
+            <table style="padding:10px" class="table table-bordered" id="tblData">
+                <thead>
+                    <tr class="success">
+                        <th> Category Icon</th>
+                        <th> Video Category</th>
+                        <th> Number of videos Liked</th>
+                    </tr>
+                </thead>
+                <tbody id="tblBody"></tbody>
+            </table>
+
+            <div id="divError" class="alert alert-danger collapse">
+                <a id="linkClose" class="close" href="#"> &times;</a>
+                <div id="divErrorText"> </div>
+            </div>
+
+            <div id="contentGrid" class="grid-container hide">
+
+            </div>
+
+        </div>
+
+        
+        <script src="Scripts/bootstrap.min.js"></script>
+        <script src="Scripts/jquery-1.10.2.min.js"></script>
+
+        <script type="text/javascript">
+
+        $(document).ready(function () {
+
+                $('#btnGridView').click(function () {
+                   $('#tblData').addClass("hide");//Table Hide
+                   $('#contentGrid').removeClass("hide");//Grid Show
+                });
+
+                $('#btnListView').click(function () {
+                    $('#tblData').removeClass("hide");//Table Hide
+                    $('#contentGrid').addClass("hide");//Grid Show
+                });
+
+            $('#btnGetMyInterestsTop20').click(function () {
+                $("#loaderImage").removeClass("hide");
+                console.log("jatin wadhwa");
+                $.ajax({
+                    url: '/Home/YouTubeInterest?videoCount=20',
+                    method: 'GET',
+                    success: function (response) {
+                        $("#loaderImage").addClass("hide");
+                        $("#tblBody").empty();
+                        console.log("Inside response");
+                        console.log(response);
+                        var data = eval(response); // this will convert your json string to a javascript object
+
+                        for (var key in data) {
+                            var row = $('<tr><td>' + '<img src="CategoryIcon\\education.png" />' + '</td><td>' + key + '</td><td>' + data[key] + '</td></tr>');
+                            var gridItem = $('<div class="grid-item">' + '<img src="CategoryIcon\\education.png" />  </br>' + key + '    ' + data[key] + '</div>');
+                            $('#contentGrid').append(gridItem);
+                            $('#tblData').append(row);
+                        }
+
+
+                    },
+                    error: function (error) {
+                        console.log(localStorage.getItem("accessToken"));
+                        console.log(error);
+                        console.log(error.error);
+                    }
+
+                });
+
+            });
+                    
+
+
+            $('#btnLogoff').click(function () {
+                localStorage.removeItem('accessToken');
+                window.location.href = "Login.html";
+
+            });
+
+
+            $("#spanUsername").text("Hello " + localStorage.getItem("userName"));
+            
+
+            $('#linkClose').click(function () {
+                $('#divError').hide('fade')
+            });
+
+            $('#errorModal').on('hidden.bs.modal', function () {
+                window.location.href = "Login.html";
+            });
+
+          
+        }); </script>
+
+    </div>
+</body>
+</html>
